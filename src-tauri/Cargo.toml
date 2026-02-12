@@ -14,3 +14,7 @@ tauri = { version = "1.6", features = ["shell-open", "custom-protocol"] }
 
 # Use the core scraper library from the repo root
 youtube_comment_scraper = { path = ".." }
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
