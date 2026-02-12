@@ -38,56 +38,65 @@ struct CommentRow {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct CommentThreadListResponse {
     items: Option<Vec<CommentThreadItem>>,
-    nextPageToken: Option<String>,
+    next_page_token: Option<String>,
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct CommentThreadItem {
     snippet: Option<CommentThreadSnippet>,
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct CommentThreadSnippet {
-    topLevelComment: Option<TopLevelComment>,
-    totalReplyCount: Option<i64>,
+    top_level_comment: Option<TopLevelComment>,
+    total_reply_count: Option<i64>,
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct TopLevelComment {
     id: Option<String>,
     snippet: Option<CommentSnippet>,
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct CommentListResponse {
     items: Option<Vec<CommentItem>>,
-    nextPageToken: Option<String>,
+    next_page_token: Option<String>,
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct CommentItem {
     id: Option<String>,
     snippet: Option<CommentSnippet>,
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct CommentSnippet {
-    authorDisplayName: Option<String>,
-    authorChannelId: Option<AuthorChannelId>,
-    publishedAt: Option<String>,
-    likeCount: Option<i64>,
-    textDisplay: Option<String>,
+    author_display_name: Option<String>,
+    author_channel_id: Option<AuthorChannelId>,
+    published_at: Option<String>,
+    like_count: Option<i64>,
+    text_display: Option<String>,
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct AuthorChannelId {
     value: Option<String>,
 }
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    dotenvy::dotenv().ok();
     let args = Args::parse();
     let api_key = args
         .api_key
@@ -128,15 +137,20 @@ async fn fetch_comment_threads(client: &Client, api_key: &str, video_id: &str) -
 
         let url = format!("{}/commentThreads", API_BASE);
         let resp = client.get(&url).query(&params).send().await?;
-        if !resp.status().is_success() {
+        let status = resp.status();
+        if !status.is_success() {
             let body = resp.text().await.unwrap_or_default();
-            return Err(anyhow!("HTTP {}: {}", resp.status(), body));
+            return Err(anyhow!("HTTP {}: {}", status, body));
         }
 
         let data: CommentThreadListResponse = resp.json().await?;
         if let Some(items) = data.items {
             for item in items {
-                let top = match item.snippet.and_then(|s| s.topLevelComment) {
+                let snippet = match item.snippet {
+                    Some(value) => value,
+                    None => continue,
+                };
+                let top = match snippet.top_level_comment {
                     Some(value) => value,
                     None => continue,
                 };
@@ -150,18 +164,15 @@ async fn fetch_comment_threads(client: &Client, api_key: &str, video_id: &str) -
                         comment_id: top_id.clone(),
                         parent_id: String::new(),
                         video_id: video_id.to_string(),
-                        author: snippet.authorDisplayName.unwrap_or_default(),
-                        author_channel_id: snippet.authorChannelId.and_then(|c| c.value).unwrap_or_default(),
-                        published_at: snippet.publishedAt.unwrap_or_default(),
-                        like_count: snippet.likeCount.unwrap_or(0),
-                        text: snippet.textDisplay.unwrap_or_default(),
+                        author: snippet.author_display_name.unwrap_or_default(),
+                        author_channel_id: snippet.author_channel_id.and_then(|c| c.value).unwrap_or_default(),
+                        published_at: snippet.published_at.unwrap_or_default(),
+                        like_count: snippet.like_count.unwrap_or(0),
+                        text: snippet.text_display.unwrap_or_default(),
                     });
                 }
 
-                let reply_count = item
-                    .snippet
-                    .and_then(|s| s.totalReplyCount)
-                    .unwrap_or(0);
+                let reply_count = snippet.total_reply_count.unwrap_or(0);
 
                 if reply_count > 0 {
                     let mut replies = fetch_replies(client, api_key, &top_id, video_id).await?;
@@ -170,7 +181,7 @@ async fn fetch_comment_threads(client: &Client, api_key: &str, video_id: &str) -
             }
         }
 
-        if let Some(token) = data.nextPageToken {
+        if let Some(token) = data.next_page_token {
             page_token = Some(token);
         } else {
             break;
@@ -203,9 +214,10 @@ async fn fetch_replies(
 
         let url = format!("{}/comments", API_BASE);
         let resp = client.get(&url).query(&params).send().await?;
-        if !resp.status().is_success() {
+        let status = resp.status();
+        if !status.is_success() {
             let body = resp.text().await.unwrap_or_default();
-            return Err(anyhow!("HTTP {}: {}", resp.status(), body));
+            return Err(anyhow!("HTTP {}: {}", status, body));
         }
 
         let data: CommentListResponse = resp.json().await?;
@@ -219,16 +231,16 @@ async fn fetch_replies(
                     comment_id: item.id.unwrap_or_default(),
                     parent_id: parent_id.to_string(),
                     video_id: video_id.to_string(),
-                    author: snippet.authorDisplayName.unwrap_or_default(),
-                    author_channel_id: snippet.authorChannelId.and_then(|c| c.value).unwrap_or_default(),
-                    published_at: snippet.publishedAt.unwrap_or_default(),
-                    like_count: snippet.likeCount.unwrap_or(0),
-                    text: snippet.textDisplay.unwrap_or_default(),
+                    author: snippet.author_display_name.unwrap_or_default(),
+                    author_channel_id: snippet.author_channel_id.and_then(|c| c.value).unwrap_or_default(),
+                    published_at: snippet.published_at.unwrap_or_default(),
+                    like_count: snippet.like_count.unwrap_or(0),
+                    text: snippet.text_display.unwrap_or_default(),
                 });
             }
         }
 
-        if let Some(token) = data.nextPageToken {
+        if let Some(token) = data.next_page_token {
             page_token = Some(token);
         } else {
             break;

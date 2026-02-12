@@ -27,6 +27,12 @@ export YOUTUBE_API_KEY="your_api_key_here"
 
 The script writes `dQw4w9WgXcQ.csv` to the current directory and overwrites it if it exists.
 
+You can also place the key in a local `.env` file:
+
+```bash
+YOUTUBE_API_KEY="your_api_key_here"
+```
+
 ## Distribution (GitHub Releases)
 This repo includes a GitHub Actions workflow that builds standalone binaries for:
 - Windows (x64)
