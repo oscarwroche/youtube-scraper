@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "YouTube Comment Scraper",
-    "version": "1.2.11"
+    "version": "1.2.12"
   },
   "tauri": {
     "bundle": {
