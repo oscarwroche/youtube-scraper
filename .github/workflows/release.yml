@@ -36,6 +36,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
+            ~/.cargo/bin
             target
             src-tauri/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
@@ -43,7 +44,13 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Install Tauri CLI
-        run: cargo install tauri-cli --version "^1.5"
+        shell: bash
+        run: |
+          if ! command -v tauri >/dev/null 2>&1; then
+            cargo install tauri-cli --version "^1.5"
+          else
+            echo "tauri-cli already installed"
+          fi
 
       - name: Install Linux Dependencies
         if: runner.os == 'Linux'
