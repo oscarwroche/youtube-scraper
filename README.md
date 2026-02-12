@@ -4,6 +4,7 @@ Download comments from a YouTube video and export them to CSV. This is a small d
 
 ## Download
 Go to the latest Release and download the installer for your OS:
+- Latest Releases: https://github.com/oscarwroche/youtube-scraper/releases/latest
 - Windows: `.msi` (or `nsis` installer)
 - macOS: `.app` bundle
 - Linux: `.AppImage` or `.deb`
@@ -11,9 +12,9 @@ Go to the latest Release and download the installer for your OS:
 ## Get A YouTube API Key
 This app uses the official YouTube Data API. You’ll need a free API key from Google Cloud.
 
-1. Open Google Cloud Console and create a new project (or select one).
-2. Enable **YouTube Data API v3** for that project.
-3. Create an **API key** under **APIs & Services → Credentials**.
+1. Open Google Cloud Console and create a new project (or select one): https://console.cloud.google.com/
+2. Enable **YouTube Data API v3** for that project: https://console.cloud.google.com/apis/library/youtube.googleapis.com
+3. Create an **API key** under **APIs & Services → Credentials**: https://console.cloud.google.com/apis/credentials
 4. (Recommended) Restrict the key to prevent abuse.
 
 ## How It Works
