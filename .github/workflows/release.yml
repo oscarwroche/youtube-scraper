@@ -73,7 +73,16 @@ jobs:
             pkg-config
 
       - name: Build Tauri App
-        run: CARGO_TARGET_DIR=src-tauri/target cargo tauri build
+        working-directory: src-tauri
+        run: cargo tauri build
+
+      - name: Debug Bundle Paths
+        shell: bash
+        run: |
+          echo "Listing src-tauri/target/release:"
+          ls -la src-tauri/target/release || true
+          echo "Listing src-tauri/target/release/bundle:"
+          ls -la src-tauri/target/release/bundle || true
 
       - name: Collect Bundles (Linux)
         if: runner.os == 'Linux'
