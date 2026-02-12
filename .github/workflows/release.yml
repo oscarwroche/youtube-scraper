@@ -39,14 +39,14 @@ jobs:
             ~/.cargo/bin
             target
             src-tauri/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock', 'src-tauri/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
 
       - name: Install Tauri CLI
         shell: bash
         run: |
-          if ! command -v tauri >/dev/null 2>&1; then
+          if ! command -v cargo-tauri >/dev/null 2>&1; then
             cargo install tauri-cli --version "^1.5"
           else
             echo "tauri-cli already installed"
