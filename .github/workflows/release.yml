@@ -68,17 +68,13 @@ jobs:
             pkg-config
 
       - name: Build Tauri App
-        run: cargo tauri build
+        run: CARGO_TARGET_DIR=src-tauri/target cargo tauri build
 
       - name: Collect Bundles (Linux)
         if: runner.os == 'Linux'
         run: |
           mkdir -p dist
-          for dir in src-tauri/target/release/bundle target/release/bundle; do
-            if [ -d "$dir" ]; then
-              cp -R "$dir"/* dist/ || true
-            fi
-          done
+          cp -R src-tauri/target/release/bundle/* dist/ || true
           if [ -z "$(ls -A dist 2>/dev/null)" ]; then
             echo "No bundle artifacts found."
             exit 1
@@ -88,11 +84,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           mkdir -p dist
-          for dir in src-tauri/target/release/bundle target/release/bundle; do
-            if [ -d "$dir" ]; then
-              cp -R "$dir"/* dist/ || true
-            fi
-          done
+          cp -R src-tauri/target/release/bundle/* dist/ || true
           if [ -z "$(ls -A dist 2>/dev/null)" ]; then
             echo "No bundle artifacts found."
             exit 1
@@ -103,11 +95,9 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          $dirs = @("src-tauri/target/release/bundle", "target/release/bundle")
-          foreach ($d in $dirs) {
-            if (Test-Path $d) {
-              Copy-Item -Recurse -Force "$d/*" dist/ -ErrorAction SilentlyContinue
-            }
+          $dir = "src-tauri/target/release/bundle"
+          if (Test-Path $dir) {
+            Copy-Item -Recurse -Force "$dir/*" dist/ -ErrorAction SilentlyContinue
           }
           if (-not (Get-ChildItem -Path dist -Recurse -ErrorAction SilentlyContinue | Where-Object { -not $_.PSIsContainer })) {
             Write-Error "No bundle artifacts found."
