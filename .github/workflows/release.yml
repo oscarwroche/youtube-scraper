@@ -74,22 +74,20 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           mkdir -p dist
-          cp -R src-tauri/target/release/bundle/appimage dist/ || true
-          cp -R src-tauri/target/release/bundle/deb dist/ || true
+          cp -R src-tauri/target/release/bundle/* dist/ || true
 
       - name: Collect Bundles (macOS)
         if: runner.os == 'macOS'
         run: |
           mkdir -p dist
-          cp -R src-tauri/target/release/bundle/macos dist/ || true
+          cp -R src-tauri/target/release/bundle/* dist/ || true
 
       - name: Collect Bundles (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Copy-Item -Recurse -Force src-tauri/target/release/bundle/msi dist/ -ErrorAction SilentlyContinue
-          Copy-Item -Recurse -Force src-tauri/target/release/bundle/nsis dist/ -ErrorAction SilentlyContinue
+          Copy-Item -Recurse -Force src-tauri/target/release/bundle/* dist/ -ErrorAction SilentlyContinue
 
       - name: Upload Tauri Artifacts
         uses: actions/upload-artifact@v4
