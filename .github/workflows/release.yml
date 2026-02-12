@@ -62,7 +62,7 @@ jobs:
             libappindicator3-dev \
             librsvg2-dev \
             libsoup2.4-dev \
-            libjavascriptcoregtk-4.0-dev \
+            libjavascriptcoregtk-4.1-dev \
             patchelf \
             libssl-dev \
             pkg-config
