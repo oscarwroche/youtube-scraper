@@ -61,6 +61,7 @@ jobs:
             libwebkit2gtk-4.1-dev \
             libappindicator3-dev \
             librsvg2-dev \
+            libsoup2.4-dev \
             patchelf \
             libssl-dev \
             pkg-config
