@@ -3,6 +3,7 @@ use std::fs;
 use std::path::PathBuf;
 use tauri::api::path::app_config_dir;
 use tauri::api::shell;
+use tauri::Manager;
 
 #[derive(Serialize, Deserialize, Default)]
 struct AppConfig {
@@ -11,7 +12,7 @@ struct AppConfig {
 
 fn config_path(app_handle: &tauri::AppHandle) -> PathBuf {
     let app_id = app_handle.config().tauri.bundle.identifier.clone();
-    let mut dir = app_config_dir(app_handle.config()).unwrap_or_else(|| PathBuf::from("."));
+    let mut dir = app_config_dir(app_handle.config().as_ref()).unwrap_or_else(|| PathBuf::from("."));
     dir.push(app_id);
     dir.push("config.json");
     dir
@@ -46,7 +47,7 @@ fn set_api_key(app_handle: tauri::AppHandle, api_key: String) -> Result<(), Stri
 }
 
 #[tauri::command]
-async fn run_scrape(app_handle: tauri::AppHandle, api_key: String, video: String) -> Result<String, String> {
+async fn run_scrape(_app_handle: tauri::AppHandle, api_key: String, video: String) -> Result<String, String> {
     if api_key.trim().is_empty() {
         return Err("API key is required".to_string());
     }
