@@ -17,15 +17,19 @@ jobs:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             artifact: youtube_comment_scraper-linux-x64.tar.gz
+            artifact_name: linux-x64
           - os: macos-latest
             target: x86_64-apple-darwin
             artifact: youtube_comment_scraper-macos-x64.tar.gz
+            artifact_name: macos-x64
           - os: macos-latest
             target: aarch64-apple-darwin
             artifact: youtube_comment_scraper-macos-arm64.tar.gz
+            artifact_name: macos-arm64
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact: youtube_comment_scraper-windows-x64.zip
+            artifact_name: windows-x64
 
     runs-on: ${{ matrix.os }}
 
@@ -55,7 +59,22 @@ jobs:
           $bin = "target/${{ matrix.target }}/release/youtube_comment_scraper.exe"
           Compress-Archive -Path $bin -DestinationPath ${{ matrix.artifact }}
 
-      - name: Upload Release Assets
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Publish Release Assets
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ matrix.artifact }}
+          files: dist/**/*
