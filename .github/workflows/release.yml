@@ -43,7 +43,7 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Install Tauri CLI
-        run: cargo install tauri-cli
+        run: cargo install tauri-cli --version "^1.5"
 
       - name: Install Linux Dependencies
         if: runner.os == 'Linux'
