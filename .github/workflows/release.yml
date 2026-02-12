@@ -74,20 +74,44 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           mkdir -p dist
-          cp -R src-tauri/target/release/bundle/* dist/ || true
+          for dir in src-tauri/target/release/bundle target/release/bundle; do
+            if [ -d "$dir" ]; then
+              cp -R "$dir"/* dist/ || true
+            fi
+          done
+          if [ -z "$(ls -A dist 2>/dev/null)" ]; then
+            echo "No bundle artifacts found."
+            exit 1
+          fi
 
       - name: Collect Bundles (macOS)
         if: runner.os == 'macOS'
         run: |
           mkdir -p dist
-          cp -R src-tauri/target/release/bundle/* dist/ || true
+          for dir in src-tauri/target/release/bundle target/release/bundle; do
+            if [ -d "$dir" ]; then
+              cp -R "$dir"/* dist/ || true
+            fi
+          done
+          if [ -z "$(ls -A dist 2>/dev/null)" ]; then
+            echo "No bundle artifacts found."
+            exit 1
+          fi
 
       - name: Collect Bundles (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Copy-Item -Recurse -Force src-tauri/target/release/bundle/* dist/ -ErrorAction SilentlyContinue
+          $dirs = @("src-tauri/target/release/bundle", "target/release/bundle")
+          foreach ($d in $dirs) {
+            if (Test-Path $d) {
+              Copy-Item -Recurse -Force "$d/*" dist/ -ErrorAction SilentlyContinue
+            }
+          }
+          if (-not (Get-ChildItem -Path dist -Recurse -ErrorAction SilentlyContinue | Where-Object { -not $_.PSIsContainer })) {
+            Write-Error "No bundle artifacts found."
+          }
 
       - name: Upload Tauri Artifacts
         uses: actions/upload-artifact@v4
