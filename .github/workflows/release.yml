@@ -9,62 +9,6 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            artifact: youtube_comment_scraper-linux-x64.tar.gz
-            artifact_name: linux-x64
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            artifact: youtube_comment_scraper-macos-x64.tar.gz
-            artifact_name: macos-x64
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            artifact: youtube_comment_scraper-macos-arm64.tar.gz
-            artifact_name: macos-arm64
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            artifact: youtube_comment_scraper-windows-x64.zip
-            artifact_name: windows-x64
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      - name: Build
-        run: cargo build --release --target ${{ matrix.target }}
-
-      - name: Package (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          BIN=target/${{ matrix.target }}/release/youtube_comment_scraper
-          chmod +x "$BIN"
-          tar -czf ${{ matrix.artifact }} -C target/${{ matrix.target }}/release youtube_comment_scraper
-
-      - name: Package (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $bin = "target/${{ matrix.target }}/release/youtube_comment_scraper.exe"
-          Compress-Archive -Path $bin -DestinationPath ${{ matrix.artifact }}
-
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.artifact_name }}
-          path: ${{ matrix.artifact }}
-
   tauri:
     strategy:
       fail-fast: false
@@ -85,6 +29,18 @@ jobs:
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+            src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
 
       - name: Install Tauri CLI
         run: cargo install tauri-cli
@@ -133,7 +89,7 @@ jobs:
           path: dist
 
   release:
-    needs: [build, tauri]
+    needs: [tauri]
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifacts
