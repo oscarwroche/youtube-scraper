@@ -65,8 +65,75 @@ jobs:
           name: ${{ matrix.artifact_name }}
           path: ${{ matrix.artifact }}
 
+  tauri:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: tauri-linux
+          - os: macos-latest
+            artifact_name: tauri-macos
+          - os: windows-latest
+            artifact_name: tauri-windows
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+
+      - name: Install Linux Dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-3-dev \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libssl-dev \
+            pkg-config
+
+      - name: Build Tauri App
+        run: cargo tauri build
+
+      - name: Collect Bundles (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p dist
+          cp -R src-tauri/target/release/bundle/appimage dist/ || true
+          cp -R src-tauri/target/release/bundle/deb dist/ || true
+
+      - name: Collect Bundles (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p dist
+          cp -R src-tauri/target/release/bundle/macos dist/ || true
+
+      - name: Collect Bundles (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Copy-Item -Recurse -Force src-tauri/target/release/bundle/msi dist/ -ErrorAction SilentlyContinue
+          Copy-Item -Recurse -Force src-tauri/target/release/bundle/nsis dist/ -ErrorAction SilentlyContinue
+
+      - name: Upload Tauri Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: dist
+
   release:
-    needs: build
+    needs: [build, tauri]
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifacts

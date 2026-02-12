@@ -1,0 +1,30 @@
+{
+  "build": {
+    "beforeBuildCommand": "",
+    "beforeDevCommand": "",
+    "devPath": "../ui",
+    "distDir": "../ui"
+  },
+  "package": {
+    "productName": "YouTube Comment Scraper",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "bundle": {
+      "identifier": "com.oscarwroche.youtube-scraper"
+    },
+    "allowlist": {
+      "shell": {
+        "open": true
+      }
+    },
+    "windows": [
+      {
+        "title": "YouTube Comment Scraper",
+        "width": 720,
+        "height": 520,
+        "resizable": true
+      }
+    ]
+  }
+}

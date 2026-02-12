@@ -33,6 +33,38 @@ You can also place the key in a local `.env` file:
 YOUTUBE_API_KEY="your_api_key_here"
 ```
 
+## GUI App (Tauri)
+This repo includes a minimal desktop GUI built with Rust + HTML via Tauri. It saves your API key locally so you only enter it once, and lets you paste a video URL to export comments.
+
+### Build and run (desktop)
+Install the Tauri CLI:
+
+```bash
+cargo install tauri-cli
+```
+
+Run the app in dev mode:
+
+```bash
+cargo tauri dev
+```
+
+Build a native app:
+
+```bash
+cargo tauri build
+```
+
+The built app will be in `src-tauri/target/release/bundle/`.
+
+### Where the API key is stored
+The GUI stores your key in a local config file for the app (plain text). Location varies by OS:
+- macOS: `~/Library/Application Support/<bundle-id>/config.json`
+- Windows: `%APPDATA%\\<bundle-id>\\config.json`
+- Linux: `~/.config/<bundle-id>/config.json`
+
+Bundle ID is set in `src-tauri/tauri.conf.json`.
+
 ## Distribution (GitHub Releases)
 This repo includes a GitHub Actions workflow that builds standalone binaries for:
 - Windows (x64)

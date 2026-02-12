@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Comment Scraper</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header>
+        <h1>YouTube Comment Scraper</h1>
+        <p>Save your API key once, then paste a video URL and export comments to CSV.</p>
+      </header>
+
+      <section class="card">
+        <h2>API Key</h2>
+        <div class="row">
+          <input id="apiKey" type="password" placeholder="AIza..." />
+          <button id="saveKey">Save</button>
+        </div>
+        <div class="hint" id="keyStatus"></div>
+      </section>
+
+      <section class="card">
+        <h2>Video</h2>
+        <div class="row">
+          <input id="videoUrl" type="text" placeholder="https://www.youtube.com/watch?v=..." />
+          <button id="run">Run</button>
+        </div>
+        <div class="hint" id="runStatus"></div>
+      </section>
+
+      <section class="card" id="resultCard" hidden>
+        <h2>Output</h2>
+        <div class="row">
+          <input id="outputPath" type="text" readonly />
+          <button id="openFile">Open</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
