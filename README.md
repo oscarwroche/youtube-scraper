@@ -1,103 +1,51 @@
-# YouTube Comment Scraper (Rust)
+# YouTube Comment Scraper
 
-This CLI fetches YouTube comments for a video and exports them to a CSV file named `<videoId>.csv`. It supports API key via flag or environment variable and accepts either a full URL or a raw video ID.
+Download comments from a YouTube video and export them to CSV. This is a small desktop app that saves your API key locally so you only enter it once.
 
-## Requirements
-- Rust toolchain (for building once)
-- YouTube Data API v3 key
+## Download
+Go to the latest Release and download the installer for your OS:
+- Windows: `.msi` (or `nsis` installer)
+- macOS: `.app` bundle
+- Linux: `.AppImage` or `.deb`
 
-## Build
+## Get A YouTube API Key
+This app uses the official YouTube Data API. You’ll need a free API key from Google Cloud.
 
-```bash
-cargo build --release
-```
+1. Open Google Cloud Console and create a new project (or select one).
+2. Enable **YouTube Data API v3** for that project.
+3. Create an **API key** under **APIs & Services → Credentials**.
+4. (Recommended) Restrict the key to prevent abuse.
 
-The executable will be at `target/release/youtube_comment_scraper`.
+## How It Works
+1. Open the app and paste your YouTube Data API key (saved locally).
+2. Paste a video URL or ID.
+3. Click Run.
+4. The CSV is created in the same folder as the app.
 
-## Usage
+## Where The CSV Is Saved
+The file is named `<videoId>.csv` and overwrites any existing file with the same name.
 
-```bash
-# API key via env
-export YOUTUBE_API_KEY="your_api_key_here"
-./target/release/youtube_comment_scraper "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-
-# API key via flag
-./target/release/youtube_comment_scraper --api-key "your_api_key_here" dQw4w9WgXcQ
-```
-
-The script writes `dQw4w9WgXcQ.csv` to the current directory and overwrites it if it exists.
-
-You can also place the key in a local `.env` file:
-
-```bash
-YOUTUBE_API_KEY="your_api_key_here"
-```
-
-## GUI App (Tauri)
-This repo includes a minimal desktop GUI built with Rust + HTML via Tauri. It saves your API key locally so you only enter it once, and lets you paste a video URL to export comments.
-
-### Build and run (desktop)
-Install the Tauri CLI:
-
-```bash
-cargo install tauri-cli
-```
-
-Run the app in dev mode:
-
-```bash
-cargo tauri dev
-```
-
-Build a native app:
-
-```bash
-cargo tauri build
-```
-
-The built app will be in `src-tauri/target/release/bundle/`.
-
-### Where the API key is stored
-The GUI stores your key in a local config file for the app (plain text). Location varies by OS:
+## API Key Storage
+The app stores your key in a local config file (plain text). Location varies by OS:
 - macOS: `~/Library/Application Support/<bundle-id>/config.json`
 - Windows: `%APPDATA%\\<bundle-id>\\config.json`
 - Linux: `~/.config/<bundle-id>/config.json`
 
 Bundle ID is set in `src-tauri/tauri.conf.json`.
 
-## Distribution (GitHub Releases)
-This repo includes a GitHub Actions workflow that builds standalone binaries for:
-- Windows (x64)
-- macOS (x64 + arm64)
-- Linux (x64)
+## Contributing
+You’ll need Rust installed.
 
-### One-time setup
-1. Create a new GitHub repo (public or private).
-2. Add it as `origin` and push:
-
+Build the CLI:
 ```bash
-git remote add origin <YOUR_REPO_URL>
-git branch -M main
-git push -u origin main
+cargo build --release
 ```
 
-### Versioning and releases
-We use semantic version tags like `v1.0.0`. When you push a tag, GitHub Actions builds binaries and attaches them to a GitHub Release.
-
+Run the desktop app:
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+cargo install tauri-cli
+cargo tauri dev
 ```
-
-Your brother can then download the Windows zip from the Release page and run:
-
-```powershell
-youtube_comment_scraper.exe --api-key "YOUR_KEY" https://www.youtube.com/watch?v=dQw4w9WgXcQ
-```
-
-### Notes
-- The workflow lives at `.github/workflows/release.yml`.
-- Each tag creates or updates a Release with built artifacts.
 
 ## Output Columns
 - `comment_id`
