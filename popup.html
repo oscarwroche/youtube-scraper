@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Comment Scraper</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="app">
+      <h1>YouTube Comment Scraper</h1>
+
+      <section class="card">
+        <label for="apiKey">API Key</label>
+        <div class="row">
+          <input id="apiKey" type="password" placeholder="AIza..." />
+          <button id="saveKey">Save</button>
+        </div>
+        <div class="hint" id="keyStatus"></div>
+      </section>
+
+      <section class="card">
+        <label for="videoUrl">Video URL</label>
+        <input id="videoUrl" type="text" placeholder="https://www.youtube.com/watch?v=..." />
+        <button id="run">Download CSV</button>
+        <div class="hint" id="runStatus"></div>
+      </section>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

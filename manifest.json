@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Comment Scraper",
+  "version": "1.0.0",
+  "description": "Download YouTube comments to CSV.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "YouTube Comment Scraper"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["activeTab", "tabs", "storage", "downloads"],
+  "host_permissions": [
+    "https://www.googleapis.com/*",
+    "https://www.youtube.com/*",
+    "https://youtu.be/*"
+  ]
+}
