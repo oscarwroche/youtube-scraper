@@ -35,6 +35,13 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Restore Tauri CLI Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cargo/bin
+          key: ${{ runner.os }}-tauri-cli-1.6.6
+
       - name: Restore Cargo Cache
         uses: actions/cache/restore@v4
         with:
@@ -44,7 +51,7 @@ jobs:
             ~/.cargo/bin
             target
             src-tauri/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock', 'src-tauri/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-build
           restore-keys: |
             ${{ runner.os }}-cargo-
 
@@ -123,6 +130,14 @@ jobs:
           name: ${{ matrix.artifact_name }}
           path: dist
 
+      - name: Save Tauri CLI Cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cargo/bin
+          key: ${{ runner.os }}-tauri-cli-1.6.6
+
       - name: Save Cargo Cache
         if: always()
         uses: actions/cache/save@v4
@@ -133,7 +148,7 @@ jobs:
             ~/.cargo/bin
             target
             src-tauri/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock', 'src-tauri/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-build
 
   release:
     needs: [tauri]
