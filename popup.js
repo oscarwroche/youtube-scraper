@@ -22,6 +22,13 @@ async function getActiveTabUrl() {
   return tab?.url || "";
 }
 
+async function preloadActiveUrl() {
+  const url = await getActiveTabUrl();
+  if (url && !videoUrlInput.value) {
+    videoUrlInput.value = url;
+  }
+}
+
 saveKeyButton.addEventListener("click", async () => {
   const apiKey = apiKeyInput.value.trim();
   if (!apiKey) {
@@ -69,3 +76,4 @@ runButton.addEventListener("click", async () => {
 });
 
 loadApiKey();
+preloadActiveUrl();
