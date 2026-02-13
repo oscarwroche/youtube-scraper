@@ -141,7 +141,8 @@ function toCsv(rows) {
     const values = header.map((k) => csvEscape(row[k]));
     lines.push(values.join(","));
   }
-  return lines.join("\n");
+  // Add UTF-8 BOM for Excel compatibility
+  return "\uFEFF" + lines.join("\n");
 }
 
 function csvEscape(value) {
