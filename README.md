@@ -5,7 +5,7 @@ Download comments from any YouTube video to a CSV file.
 ## How to Install (No Developer Experience Needed)
 1. Go to the GitHub repo page.
 2. Click **Code → Download ZIP**.
-3. Unzip the file.
+3. Unzip the file (Windows: right‑click the ZIP → **Extract All**).
 4. Open Chrome and go to `chrome://extensions`.
 5. Turn on **Developer mode** (top right).
 6. Click **Load unpacked** and select the unzipped folder.
@@ -18,6 +18,10 @@ Download comments from any YouTube video to a CSV file.
 4. Click **Download CSV**.
 
 Your file will download as `<videoId>.csv`.
+
+## Windows Tips
+- If Chrome blocks the extension, click **Keep** or **Allow**.
+- If you can’t find the downloaded CSV, check your **Downloads** folder.
 
 ## Get a YouTube API Key
 1. Open Google Cloud Console: https://console.cloud.google.com/

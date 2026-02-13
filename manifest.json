@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "YouTube Comment Scraper",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Download YouTube comments to CSV.",
   "action": {
     "default_popup": "popup.html",
