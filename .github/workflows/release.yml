@@ -5,6 +5,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      debug_ssh:
+        description: "Enable SSH debug session (tmate)"
+        required: false
+        default: "false"
 
 permissions:
   contents: write
@@ -90,6 +95,10 @@ jobs:
           ls -la src-tauri/target/release || true
           echo "Listing src-tauri/target/release/bundle:"
           ls -la src-tauri/target/release/bundle || true
+
+      - name: SSH Debug (tmate)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_ssh == 'true' }}
+        uses: mxschmitt/action-tmate@v3
 
       - name: Collect Bundles (Linux)
         if: runner.os == 'Linux'
