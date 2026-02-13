@@ -15,8 +15,7 @@ async function scrape(apiKey, videoInput) {
 
   const rows = await fetchAllComments(apiKey, videoId);
   const csv = toCsv(rows);
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
+  const url = csvToDataUrl(csv);
 
   await chrome.downloads.download({
     url,
@@ -24,7 +23,6 @@ async function scrape(apiKey, videoInput) {
     saveAs: true
   });
 
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
   return rows.length;
 }
 
@@ -140,6 +138,11 @@ function csvEscape(value) {
     return `"${str.replace(/"/g, "\"\"")}"`;
   }
   return str;
+}
+
+function csvToDataUrl(csv) {
+  const encoded = encodeURIComponent(csv);
+  return `data:text/csv;charset=utf-8,${encoded}`;
 }
 
 function parseVideoId(input) {
