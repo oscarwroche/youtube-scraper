@@ -13,7 +13,7 @@ async function scrape(apiKey, videoInput) {
   const videoId = parseVideoId(videoInput);
   if (!videoId) throw new Error("Could not parse a video ID.");
 
-  const rows = await fetchAllComments(apiKey, videoId);
+  const rows = await fetchAllComments(apiKey.trim(), videoId.trim());
   const csv = toCsv(rows);
   const url = csvToDataUrl(csv);
 
@@ -106,8 +106,20 @@ function makeRow(commentId, parentId, videoId, snip) {
 async function fetchJson(url) {
   const res = await fetch(url);
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`HTTP ${res.status}: ${text}`);
+    let details = "";
+    const contentType = res.headers.get("content-type") || "";
+    try {
+      if (contentType.includes("application/json")) {
+        const data = await res.json();
+        details = data?.error?.message || JSON.stringify(data);
+      } else {
+        details = await res.text();
+      }
+    } catch {
+      details = await res.text();
+    }
+    console.error("Request failed:", url, details);
+    throw new Error(`HTTP ${res.status}: ${details}`);
   }
   return res.json();
 }
